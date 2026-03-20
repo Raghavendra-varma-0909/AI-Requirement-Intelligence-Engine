@@ -306,10 +306,94 @@ def analyze(text: str):
     else:
         modules_fired.append({"module": "NFR Coverage Checker",  "status": "clear",     "findings": 0})
 
-    # --- MODULE 4: Dependency Resolver ---
+    # --- MODULE 4: Specificity & Completeness Checker ---
+    word_count = len(text.split())
+    all_known_keywords = list(AMBIGUOUS_WORDS.keys()) + list(CONTEXT_PATTERNS.keys()) + FR_KEYWORDS + NFR_KEYWORDS
+    keyword_hits = sum(1 for kw in all_known_keywords if kw in text_lower)
+
+    specificity_issues = []
+    if word_count < 10:
+        specificity_issues.append({
+            "type":        "Critically Incomplete",
+            "severity":    "high",
+            "description": f"Requirement is only {word_count} word(s) long. Cannot be analysed meaningfully.",
+            "impact":      "A requirement this short has no scope, actors, or objectives. It provides zero engineering guidance."
+        })
+    elif word_count < 20:
+        specificity_issues.append({
+            "type":        "Insufficient Detail",
+            "severity":    "high",
+            "description": f"Requirement is only {word_count} words. Missing actors, actions, data, and constraints.",
+            "impact":      "Engineers cannot build, test, or estimate from such a sparse specification."
+        })
+
+    if keyword_hits == 0:
+        specificity_issues.append({
+            "type":        "No Engineering Keywords",
+            "severity":    "high",
+            "description": "No domain, functional, or quality keywords detected in the requirement text.",
+            "impact":      "The engine cannot identify any system features, quality targets, or technical concerns."
+        })
+
+    # Check for missing actors (who is doing what)
+    actor_keywords = ["user", "admin", "customer", "client", "system", "guest", "manager", "operator"]
+    has_actor = any(kw in text_lower for kw in actor_keywords)
+    if not has_actor:
+        specificity_issues.append({
+            "type":        "Missing Actor",
+            "severity":    "medium",
+            "description": "No actor or user role defined (e.g., 'user', 'admin', 'customer').",
+            "impact":      "Without knowing who performs the action, requirements cannot map to user stories or access controls."
+        })
+
+    issues.extend(specificity_issues)
+    if specificity_issues:
+        modules_fired.append({"module": "Specificity Checker", "status": "flagged", "findings": len(specificity_issues)})
+    else:
+        modules_fired.append({"module": "Specificity Checker", "status": "clear",   "findings": 0})
+
+    # --- MODULE 5: Generic Placeholder Detector ---
+    GENERIC_PLACEHOLDERS = {
+        "website":     "Too broad. Specify: e-commerce, portfolio, SaaS platform, CMS, etc.",
+        "webapp":      "Too broad. Define the domain, users, and core workflows.",
+        "web app":     "Too broad. Define the domain, users, and core workflows.",
+        "application": "Generic term. Specify: mobile app, web app, desktop application, microservice?",
+        "system":      "Overloaded term. Define: what the system manages, who uses it, and what it must do.",
+        "platform":    "Vague. Specify: marketplace, CMS, analytics platform, developer platform?",
+        "solution":    "Business jargon. Replace with a concrete system description and user outcomes.",
+        "tool":        "Vague scope. Define: what the tool does, who uses it, and what problem it solves.",
+        "software":    "No specificity. Define the domain, users, and primary functions.",
+        "project":     "Non-technical placeholder. Describe the actual system to be built.",
+    }
+
+    generic_hits = []
+    for term, advice in GENERIC_PLACEHOLDERS.items():
+        if re.search(r'\b' + re.escape(term) + r'\b', text_lower):
+            all_pattern_kws = list(CONTEXT_PATTERNS.keys())
+            # Only flag if no specific domain context exists alongside the generic term
+            if keyword_hits < 2:
+                generic_hits.append({
+                    "type":        "Generic Placeholder Term",
+                    "severity":    "high",
+                    "description": f"Term '{term}' is a generic placeholder with no engineering definition.",
+                    "impact":      advice
+                })
+                missing_requirements.append({
+                    "domain":     "Specification Quality",
+                    "category":   "Completeness",
+                    "suggestion": f"Replace '{term}' with a specific system description including domain, users, and features."
+                })
+
+    issues.extend(generic_hits)
+    if generic_hits:
+        modules_fired.append({"module": "Placeholder Detector", "status": "flagged", "findings": len(generic_hits)})
+    else:
+        modules_fired.append({"module": "Placeholder Detector", "status": "clear",   "findings": 0})
+
+    # --- MODULE 6: Dependency Resolver ---
     modules_fired.append({"module": "Dependency Resolver",       "status": "triggered" if dependencies else "clear", "findings": len(dependencies)})
 
-    # --- MODULE 5: Requirement Classifier ---
+    # --- MODULE 7: Requirement Classifier ---
     req_class = classify_requirement(text)
     modules_fired.append({"module": "Requirement Classifier",    "status": "triggered", "findings": 1, "classification": req_class})
 
