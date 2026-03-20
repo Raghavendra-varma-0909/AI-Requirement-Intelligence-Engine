@@ -20,10 +20,10 @@ The backend skips trivial GPT wrappers in favor of a layered intelligence archit
   - [ResultsPanel](file:///c:/Users/yarra/OneDrive/Desktop/babu/Projects/AI%20Requirement%20Intelligence%20Engine/frontend/src/components/ResultsPanel.jsx#4-90): A dynamic side-by-side component mapping structured JSON output into expandable analysis sections cleanly showing explanations and impacts for every flagged rule.
   
 ## 🚀 How to Experience the Product
-Both environments have already been initiated for you.
+Both environments are available live or locally.
 
-1. Note the application uses the **React framework** running locally on Vite to deliver its high-end UX.
-2. Open **[http://localhost:5173/](http://localhost:5173/)** in your browser. 
+1. **Live Production App:** [ai-requirement-intelligence-engine.vercel.app](https://ai-requirement-intelligence-engine.vercel.app)
+2. **Local Environment:** Open **[http://localhost:5174/](http://localhost:5174/)** in your browser. 
 3. **Experience the Live Requirements Critique (WOW feature)**:
    Begin typing raw requirements (e.g. *"Build a fast and secure payment system"*). 
    Instantly, the system will highlight vague words like "fast", identify that "payment" is missing failure/rollback handling, calculate the architectural dependencies, map them, and dynamically drop your Quality Score in real-time.
