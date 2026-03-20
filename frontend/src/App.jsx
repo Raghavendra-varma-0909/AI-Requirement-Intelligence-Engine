@@ -58,12 +58,15 @@ function App() {
       <header className="app-header glass-panel">
         <div className="header-left">
           <div className="logo">
-            <span className="logo-icon">⚙️</span>
-            <span className="logo-text">AI Requirement Intelligence Engine</span>
+            <img src="/logo.png" alt="AIRE Logo" className="logo-img" />
+            <div className="logo-text-group">
+              <span className="logo-text">AI Requirement Intelligence Engine</span>
+              <div className="header-tagline">Hybrid Rule-Based + AI Analysis Pipeline</div>
+            </div>
           </div>
-          <div className="header-tagline">Hybrid Rule-Based + AI Analysis Pipeline</div>
         </div>
         <div className="header-actions">
+          <div className="privacy-badge">🔒 Privacy Protected</div>
           {activeData && (
             <div className="score-pill" style={{ color: activeData.confidence_score >= 80 ? '#34d399' : activeData.confidence_score >= 50 ? '#fb923c' : '#f87171' }}>
               Quality Score: <strong>{activeData.confidence_score}/100</strong>
