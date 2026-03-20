@@ -4,12 +4,12 @@ This directory contains the React (Vite) frontend for the **AI Requirement Intel
 
 🌐 **Live Demo:** [ai-requirement-intelligence-engine.vercel.app](https://ai-requirement-intelligence-engine.vercel.app)
 
-## Quick Start (Local)
+## Production Deployment
 
-1. Make sure the backend is running on `localhost:8000` (check the root `README.md` for backend instructions).
-2. Install dependencies: `npm install`
-3. Run the dev server: `npm run dev`
-4. Open [http://localhost:5174](http://localhost:5174) in your browser.
+This project is specifically configured to be seamlessly deployed on **Vercel**. 
+- It uses the standard Vite build command (`npm run build`) via the Vite build pipeline.
+- Custom routing is managed explicitly through `vercel.json` on deployment.
+- It connects to the AI backend dynamically. Ensure the `VITE_API_URL` environment variable is set in the Vercel dashboard to point to your live Render API (e.g., `https://ai-req-engine-api.onrender.com`).
 
 ## Tech Stack
 - **React** (via Vite for hot module replacement)

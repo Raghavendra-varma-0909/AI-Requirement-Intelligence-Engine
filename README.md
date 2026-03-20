@@ -78,3 +78,16 @@ The magic of the application lies inside `rules_engine.py` and `scoring.py`. The
 
 ### Module 8: The Scoring Algorithm (`scoring.py`)
 *   **Logic**: A strict mathematical deduction model. Starts at a Base Score of 100. It deducts weighted penalties for missing actors, missing NFRs, and ambiguous terms, while adding capped bonuses for strength signals and resolved dependencies. Outputs the final Quality Score (0-100).
+
+---
+
+## 🌍 4. Deployment Architecture
+
+The AI Requirement Intelligence Engine is strictly designed for production deployment rather than local testing.
+
+*   **Frontend (Vercel.com)**
+    *   The React suite is edge-deployed via Vercel. 
+    *   It is natively configured with a `vercel.json` routing matrix and relies on a secure `VITE_API_URL` environment variable injected during the Vercel build phase to prevent hardcoded API routes.
+*   **Backend (Render.com)**
+    *   The FastAPI Python engine is deployed as a continuous Web Service on Render.
+    *   Deployment is fully automated via the `render.yaml` Infrastructure-as-Code file, directing Render to install requirements and boot `uvicorn main:app --host 0.0.0.0 --port 10000`.

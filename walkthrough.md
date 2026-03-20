@@ -20,13 +20,16 @@ The backend skips trivial GPT wrappers in favor of a layered intelligence archit
   - [ResultsPanel](file:///c:/Users/yarra/OneDrive/Desktop/babu/Projects/AI%20Requirement%20Intelligence%20Engine/frontend/src/components/ResultsPanel.jsx#4-90): A dynamic side-by-side component mapping structured JSON output into expandable analysis sections cleanly showing explanations and impacts for every flagged rule.
   
 ## 🚀 How to Experience the Product
-Both environments are available live or locally.
+The application is fully deployed and accessible globally.
 
 1. **Live Production App:** [ai-requirement-intelligence-engine.vercel.app](https://ai-requirement-intelligence-engine.vercel.app)
-2. **Local Environment:** Open **[http://localhost:5174/](http://localhost:5174/)** in your browser. 
-3. **Experience the Live Requirements Critique (WOW feature)**:
+2. **Experience the Live Requirements Critique (WOW feature)**:
    Begin typing raw requirements (e.g. *"Build a fast and secure payment system"*). 
    Instantly, the system will highlight vague words like "fast", identify that "payment" is missing failure/rollback handling, calculate the architectural dependencies, map them, and dynamically drop your Quality Score in real-time.
-4. Click **Deep Analyze** to synthesize the deterministic output into clean, structured software engineering objectives.
+3. Click **Deep Analyze** to synthesize the deterministic output into clean, structured software engineering objectives.
 
-*(If you ever need to restart the servers manually: Run `npm run dev` in `frontend/` and `uvicorn main:app` in the `backend/` virtual environment).*
+---
+
+## 🌍 Deployment Architecture
+- **Frontend (Vercel):** The React/Vite application is automatically deployed on Vercel edge networks. It securely reads the `VITE_API_URL` environment variable during deployment to connect to the backend, completely bypassing localhost.
+- **Backend (Render.com):** The Python FastAPI Engine is deployed as a Web Service on Render. It is strictly configured via `render.yaml` to execute the Uvicorn worker dynamically on a port assigned by Render.
