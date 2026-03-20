@@ -2,6 +2,8 @@
 
 **Hybrid Rule-Based + AI Analysis Pipeline**
 
+🌐 **Live Demo:** [ai-requirement-intelligence-engine.vercel.app](https://ai-requirement-intelligence-engine.vercel.app)
+
 This document provides a comprehensive overview of the technology stack, application workflow, and the deterministic core logic powering the engine.
 
 ---
