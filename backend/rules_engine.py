@@ -236,6 +236,68 @@ def classify_requirement(text):
 
 
 # ============================================================
+# STRENGTH SIGNALS — reward rich, specific engineering terms
+# ============================================================
+STRENGTH_SIGNALS = {
+    "jwt":                 {"label": "JWT Authentication",      "bonus": 5, "color": "green"},
+    "oauth":               {"label": "OAuth 2.0",               "bonus": 5, "color": "green"},
+    "mfa":                 {"label": "Multi-Factor Auth",       "bonus": 5, "color": "green"},
+    "stripe":              {"label": "Stripe Integration",      "bonus": 5, "color": "green"},
+    "payment gateway":     {"label": "Payment Gateway",         "bonus": 5, "color": "green"},
+    "failure handling":    {"label": "Failure Handling",        "bonus": 5, "color": "green"},
+    "error handling":      {"label": "Error Handling",          "bonus": 5, "color": "green"},
+    "transaction log":     {"label": "Transaction Logs",        "bonus": 5, "color": "green"},
+    "audit log":           {"label": "Audit Logging",           "bonus": 5, "color": "green"},
+    "retry":               {"label": "Retry Logic",             "bonus": 4, "color": "green"},
+    "rollback":            {"label": "Rollback Support",        "bonus": 4, "color": "green"},
+    "rate limit":          {"label": "Rate Limiting",           "bonus": 4, "color": "green"},
+    "encryption":          {"label": "Encryption",              "bonus": 4, "color": "green"},
+    "https":               {"label": "HTTPS / TLS",             "bonus": 4, "color": "green"},
+    "tls":                 {"label": "TLS Security",            "bonus": 4, "color": "green"},
+    "pagination":          {"label": "Pagination",              "bonus": 3, "color": "green"},
+    "unit test":           {"label": "Unit Testing",            "bonus": 3, "color": "green"},
+    "acceptance test":     {"label": "Acceptance Testing",      "bonus": 4, "color": "green"},
+    "load test":           {"label": "Load Testing",            "bonus": 4, "color": "green"},
+    "redis":               {"label": "Redis Caching",           "bonus": 3, "color": "green"},
+    "postgresql":          {"label": "PostgreSQL",              "bonus": 3, "color": "green"},
+    "docker":              {"label": "Docker",                  "bonus": 3, "color": "green"},
+    "kubernetes":          {"label": "Kubernetes",              "bonus": 4, "color": "green"},
+    "webhook":             {"label": "Webhooks",                "bonus": 3, "color": "green"},
+    "graphql":             {"label": "GraphQL API",             "bonus": 3, "color": "green"},
+    "rest api":            {"label": "REST API",                "bonus": 3, "color": "green"},
+    "microservice":        {"label": "Microservices",           "bonus": 4, "color": "green"},
+    "concurrent":          {"label": "Concurrency Target",      "bonus": 5, "color": "green"},
+    "99.9":                {"label": "99.9% SLA",               "bonus": 6, "color": "green"},
+    "99.99":               {"label": "99.99% SLA",              "bonus": 6, "color": "green"},
+    "200ms":               {"label": "<200ms Latency",          "bonus": 5, "color": "green"},
+    "pci":                 {"label": "PCI-DSS Compliance",      "bonus": 5, "color": "green"},
+    "gdpr":                {"label": "GDPR Compliance",         "bonus": 5, "color": "green"},
+    "owasp":               {"label": "OWASP Standards",         "bonus": 5, "color": "green"},
+}
+
+# ============================================================
+# NFR SPECIFIC SUGGESTIONS — contextual, consultant-grade
+# ============================================================
+NFR_SPECIFIC_SUGGESTIONS = [
+    {"category": "Performance",  "suggestion": "Define response time target: e.g., 'API must respond within 200ms at p95 under normal load'."},
+    {"category": "Availability", "suggestion": "Specify uptime SLA: e.g., '99.9% availability (allows ~8.7 hrs/year downtime)'."},
+    {"category": "Security",     "suggestion": "Reference security standard: e.g., 'System must comply with OWASP Top 10 and pass SAST/DAST scans'."},
+    {"category": "Scalability",  "suggestion": "State concurrency target: e.g., 'System must handle 500 concurrent users without degradation'."},
+    {"category": "Disaster Rec.","suggestion": "Define RPO/RTO: e.g., 'Recovery Point Objective ≤ 1 hour, Recovery Time Objective ≤ 4 hours'."},
+]
+
+def detect_strong_features(text_lower):
+    found = []
+    for signal, data in STRENGTH_SIGNALS.items():
+        if signal in text_lower:
+            found.append({
+                "term":  signal,
+                "label": data["label"],
+                "bonus": data["bonus"],
+            })
+    return found
+
+# ============================================================
 # MAIN ANALYSIS FUNCTION
 # ============================================================
 def analyze(text: str):
@@ -244,6 +306,7 @@ def analyze(text: str):
     missing_requirements = []
     dependencies         = []
     modules_fired        = []
+    strong_features      = detect_strong_features(text.lower())
 
     text_lower = text.lower()
 
@@ -293,7 +356,8 @@ def analyze(text: str):
 
     # --- MODULE 3: NFR Coverage Checker ---
     nfr_keywords = ["scale", "concurrent", "load", "uptime", "availability", "latency",
-                     "throughput", "response time", "performance", "reliability", "backup"]
+                     "throughput", "response time", "performance", "reliability", "backup",
+                     "200ms", "99.9", "sla", "rto", "rpo"]
     has_nfrs = any(kw in text_lower for kw in nfr_keywords)
     if not has_nfrs:
         issues.append({
@@ -302,7 +366,14 @@ def analyze(text: str):
             "description": "No measurable Non-Functional Requirements detected in the specification.",
             "impact":      "System architecture cannot be sized, tested, or validated without performance/reliability targets."
         })
-        modules_fired.append({"module": "NFR Coverage Checker",  "status": "flagged",   "findings": 1})
+        # Add specific, consultant-grade NFR suggestions instead of generic
+        for nfr_sug in NFR_SPECIFIC_SUGGESTIONS:
+            missing_requirements.append({
+                "domain":     "Non-Functional Requirements",
+                "category":   nfr_sug["category"],
+                "suggestion": nfr_sug["suggestion"]
+            })
+        modules_fired.append({"module": "NFR Coverage Checker",  "status": "flagged",   "findings": len(NFR_SPECIFIC_SUGGESTIONS)})
     else:
         modules_fired.append({"module": "NFR Coverage Checker",  "status": "clear",     "findings": 0})
 
@@ -397,4 +468,4 @@ def analyze(text: str):
     req_class = classify_requirement(text)
     modules_fired.append({"module": "Requirement Classifier",    "status": "triggered", "findings": 1, "classification": req_class})
 
-    return issues, ambiguities, missing_requirements, dependencies, modules_fired, req_class
+    return issues, ambiguities, missing_requirements, dependencies, modules_fired, req_class, strong_features

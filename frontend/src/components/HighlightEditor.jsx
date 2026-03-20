@@ -3,25 +3,56 @@ import React from 'react';
 const HighlightEditor = ({ text, onChange, liveData }) => {
 
   const getHighlights = () => {
-    if (!liveData || !liveData.ambiguities) return [];
     let highlights = [];
 
-    liveData.ambiguities.forEach(amb => {
-      const regex = new RegExp(`\\b${amb.word}\\b`, 'gi');
-      let match;
-      while ((match = regex.exec(text)) !== null) {
-        highlights.push({
-          start: match.index,
-          end: match.index + match[0].length,
-          type: 'ambiguity',
-          tooltip: `⚠️ Ambiguous: ${amb.reason} → ${amb.suggestion}`,
-          word: amb.word
-        });
-      }
-    });
+    // 🔴 RED — Ambiguous terms
+    if (liveData?.ambiguities) {
+      liveData.ambiguities.forEach(amb => {
+        const regex = new RegExp(`\\b${amb.word.replace(/[-\/]/g, '[\\-\\/]')}\\b`, 'gi');
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+          highlights.push({
+            start: match.index,
+            end: match.index + match[0].length,
+            type: 'ambiguity',
+            className: 'highlight-red',
+            tooltip: `⚠️ Ambiguous: ${amb.reason}\n💡 Suggest: ${amb.suggestion}`,
+          });
+        }
+      });
+    }
 
-    highlights.sort((a, b) => a.start - b.start);
-    return highlights;
+    // 🟢 GREEN — Strength signals (detected engineering features)
+    if (liveData?.strong_features) {
+      liveData.strong_features.forEach(feat => {
+        const regex = new RegExp(`\\b${feat.term.replace(/[-\/]/g, '[\\-\\/]')}\\b`, 'gi');
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+          // Don't overlap with red highlights
+          highlights.push({
+            start: match.index,
+            end: match.index + match[0].length,
+            type: 'strength',
+            className: 'highlight-green',
+            tooltip: `✅ Strong Feature: ${feat.label} (+${feat.bonus} pts)`,
+          });
+        }
+      });
+    }
+
+    // Sort and de-overlap: red takes priority over green
+    highlights.sort((a, b) => a.start - b.start || (a.type === 'ambiguity' ? -1 : 1));
+
+    // Remove overlaps
+    const deduped = [];
+    let lastEnd = 0;
+    for (const hl of highlights) {
+      if (hl.start >= lastEnd) {
+        deduped.push(hl);
+        lastEnd = hl.end;
+      }
+    }
+    return deduped;
   };
 
   const renderHighlightedText = () => {
@@ -37,7 +68,7 @@ const HighlightEditor = ({ text, onChange, liveData }) => {
         elements.push(<span key={`text-${i}`}>{text.substring(lastIndex, hl.start)}</span>);
       }
       elements.push(
-        <span key={`hl-${i}`} className="highlight highlight-red" title={hl.tooltip}>
+        <span key={`hl-${i}`} className={`highlight ${hl.className}`} title={hl.tooltip}>
           {text.substring(hl.start, hl.end)}
         </span>
       );
@@ -49,6 +80,9 @@ const HighlightEditor = ({ text, onChange, liveData }) => {
     }
     return elements;
   };
+
+  const ambigCount = liveData?.ambiguities?.length || 0;
+  const strengthCount = liveData?.strong_features?.length || 0;
 
   return (
     <div className="editor-container glass-panel">
@@ -71,7 +105,9 @@ const HighlightEditor = ({ text, onChange, liveData }) => {
         />
       </div>
       <div className="editor-footer">
-        <span className="hint">🔴 Red underlines = ambiguous terms · Hover for suggestions</span>
+        <span className="hint">
+          🔴 Ambiguous terms ({ambigCount}) &nbsp;·&nbsp; 🟢 Strength signals ({strengthCount}) &nbsp;·&nbsp; Hover any highlighted word
+        </span>
       </div>
     </div>
   );

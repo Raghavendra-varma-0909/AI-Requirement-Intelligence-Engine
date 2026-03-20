@@ -211,6 +211,142 @@
   border-bottom: 2px solid var(--error-red);
 }
 
+.highlight-green {
+  background-color: rgba(52, 211, 153, 0.12);
+  border-bottom: 2px solid #34d399;
+}
+
+/* === STRENGTH GRID === */
+.strength-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.strength-badge {
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  color: #34d399;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.strength-badge em {
+  color: rgba(52, 211, 153, 0.6);
+  font-style: normal;
+  margin-left: 4px;
+}
+
+.breakdown-item.bonus { color: #34d399; }
+
+/* === DEPENDENCY GRAPH === */
+.dep-graph {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dep-chain {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.dep-chain-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.dep-node {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.dep-node-root {
+  background: rgba(124, 58, 237, 0.2);
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  color: #c4b5fd;
+}
+
+.dep-node-leaf {
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  color: #e9d5ff;
+  cursor: help;
+}
+
+.dep-arrow {
+  color: var(--accent-bright);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.dep-reason {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+  line-height: 1.5;
+}
+
+.dep-reason-arrow {
+  color: var(--accent-dim);
+  margin-right: 4px;
+}
+
+.dep-reason em {
+  color: var(--text-secondary);
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* === SIDE-BY-SIDE IMPROVED VIEW === */
+.side-by-side {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.side-original, .side-improved {
+  flex: 1;
+  min-width: 0;
+}
+
+.side-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.side-content.original-text {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.side-divider {
+  font-size: 1.4rem;
+  color: var(--accent-bright);
+  padding-top: 24px;
+  flex-shrink: 0;
+}
+
+
 .text-input {
   position: absolute;
   top: 20px;
