@@ -36,7 +36,7 @@ const ResultsPanel = ({ data, isDeep, loading }) => {
   }
 
   const { issues, ambiguities, missing_requirements, dependencies,
-          strong_features, improved_requirements, final_clean_version,
+          strong_features, improved_requirements,
           confidence_score, score_breakdown } = data;
 
   const nfrMissing = (missing_requirements || []).filter(m => m.domain === 'Non-Functional Requirements');
@@ -133,7 +133,7 @@ const ResultsPanel = ({ data, isDeep, loading }) => {
         )}
 
         {/* Side-by-side Improved View */}
-        {isDeep && (improved_requirements?.length > 0 || final_clean_version) && (
+        {isDeep && improved_requirements?.length > 0 && (
           <Section title="✏️ Original vs Improved" defaultOpen={true}>
             <div className="side-by-side">
               <div className="side-original">
@@ -150,9 +150,6 @@ const ResultsPanel = ({ data, isDeep, loading }) => {
                     ))}
                   </ul>
                 ) : null}
-                {final_clean_version && (
-                  <div className="code-block" style={{ marginTop: 10 }}>{final_clean_version}</div>
-                )}
               </div>
             </div>
           </Section>

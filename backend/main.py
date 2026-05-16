@@ -50,7 +50,7 @@ def analyze_deep(req: AnalyzeRequest):
         strong_features
     )
 
-    improved, final = improvement.rewrite_and_finalize(
+    improved = improvement.rewrite_and_finalize(
         req.text, llm_result["issues"],
         llm_result["ambiguities"], llm_result["missing_requirements"],
         llm_result["dependencies"]
@@ -65,7 +65,6 @@ def analyze_deep(req: AnalyzeRequest):
         "requirement_classification": req_class,
         "strong_features": strong_features,
         "improved_requirements": improved,
-        "final_clean_version": final,
         "confidence_score": score,
         "score_breakdown": breakdown,
         "explanations": llm_result["explanations"]
